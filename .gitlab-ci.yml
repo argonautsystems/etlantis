@@ -1,5 +1,5 @@
-# etlantis CI — uv sync + import smoke + pytest --collect-only
-# Lint+test gate hardens once Phase 1 ships actual implementations.
+# etlantis CI — lint + import smoke + pytest + end-to-end example smoke.
+# Phase 1 substrates are real, so the smoke jobs run real code now.
 
 stages:
   - lint
@@ -17,8 +17,8 @@ lint:ruff:
   stage: lint
   script:
     - uv sync --extra dev
-    - uv run ruff check src/ tests/
-    - uv run ruff format --check src/ tests/
+    - uv run ruff check src/ tests/ examples/
+    - uv run ruff format --check src/ tests/ examples/
   allow_failure: false
 
 test:import-smoke:
@@ -29,10 +29,25 @@ test:import-smoke:
     - uv run python -c "import etlantis.config, etlantis.ingest, etlantis.transform, etlantis.match, etlantis.score, etlantis.closures, etlantis.analytics, etlantis.geo, etlantis.pipeline, etlantis.enforcement; print('all subsystems import OK')"
   needs: [lint:ruff]
 
-test:pytest-collect:
+test:pytest:
   stage: test
   script:
     - uv sync --extra dev
-    - uv run pytest --collect-only
+    - uv run pytest -q
   needs: [lint:ruff]
-  allow_failure: true   # No tests yet at bootstrap; lift to required once Phase 1 lands.
+  allow_failure: false   # Phase 1 lands real tests; keep this required.
+
+test:example-e2e:
+  stage: test
+  script:
+    - uv sync --extra dev
+    # Drives every Phase 1 substrate (config + ingest + transform) end-to-end
+    # against a loopback fixture server. No external network — deterministic
+    # in CI. Hardening against latent integration regressions between unit
+    # tests' mocks and real wire behavior.
+    - uv run python examples/01_ingest_csv_to_parquet.py
+    # Verify the parquet output round-trips back to a Polars frame with the
+    # expected partition layout — guards against silent write-and-forget bugs.
+    - uv run python -c "import polars as pl; df = pl.scan_parquet('/tmp/etlantis-example-out/parquet/inspections/**/*.parquet', hive_partitioning=True).collect(); assert df.height == 18, f'expected 18 rows, got {df.height}'; assert sorted(df['Status'].unique().to_list()) == ['emergency_close', 'routine_pass', 'routine_warn'], 'partition shape wrong'"
+  needs: [lint:ruff]
+  allow_failure: false

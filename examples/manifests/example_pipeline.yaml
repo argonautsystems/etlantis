@@ -1,0 +1,75 @@
+# Example pipeline manifest for the etlantis tutorial.
+#
+# Demonstrates the config substrate: ${VAR} substitution + pydantic schema +
+# the canonical PipelineManifest shape (metadata + global_settings + sources
+# + stages + directories).
+#
+# Driven by examples/01_ingest_csv_to_parquet.py.
+
+metadata:
+  version: "0.1.0"
+  description: "Tutorial pipeline showing the etlantis Phase 1 substrates."
+  app: "etlantis-tutorial"
+
+global_settings:
+  fremen_protocol:
+    # Polite UA. Apps in production should override with their own contact URL.
+    user_agent: "etlantis-tutorial/0.1 (+https://gitlab.com/perlowja/etlantis)"
+    # Tutorial uses a tiny rate-limit so the example finishes in seconds. Real
+    # pipelines should keep the 2.5s default.
+    rate_limit_delay_seconds: 0.1
+    request_timeout_seconds: 10.0
+    retry_attempts: 1
+    retry_backoff_seconds: 0.5
+  log_level: "INFO"
+
+# The driver populates ${EXAMPLE_BASE_URL} after spinning up its loopback
+# fixture server, and ${EXAMPLE_OUTPUT_DIR} once the output directory is
+# materialized. Demonstrates env-var substitution.
+sources:
+  - source_id: "inspections"
+    source_name: "Sample restaurant inspection data"
+    type: "http_csv"
+    enabled: true
+    priority: 0
+    endpoint:
+      base_url: "${EXAMPLE_BASE_URL}"
+      # `paths` is the v0.1.0 schema's list-of-resources; for a discovery-
+      # based source (where we walk an index page rather than enumerate
+      # filenames upfront), the first entry is the index URL. Phase 2 will
+      # add a first-class `index_path` field; for v0.1.0 we use this
+      # convention.
+      paths:
+        - "/sample_index.html"
+    output:
+      format: "parquet"
+      path: "${EXAMPLE_OUTPUT_DIR}/parquet/inspections"
+
+stages:
+  - name: "discover"
+    runner: "etlantis.ingest.discovery"
+    depends_on: []
+    config:
+      extensions: ["csv"]
+  - name: "archive"
+    runner: "etlantis.ingest.archive"
+    depends_on: ["discover"]
+  - name: "load"
+    runner: "etlantis.ingest.reader"
+    depends_on: ["archive"]
+  - name: "consolidate"
+    runner: "etlantis.transform.consolidate"
+    depends_on: ["load"]
+    config:
+      dedupe_subset: ["License Number"]
+      sort_by: ["License Number"]
+  - name: "publish"
+    runner: "etlantis.transform.output"
+    depends_on: ["consolidate"]
+    config:
+      partition_cols: ["Status"]
+      compression: "snappy"
+
+directories:
+  archive_root: "${EXAMPLE_OUTPUT_DIR}/archives"
+  parquet_out: "${EXAMPLE_OUTPUT_DIR}/parquet"
