@@ -1,0 +1,8 @@
+License Number,Business Name,Inspection Date,Violations,Status
+3234567,Apex Catering,2026-04-15,3,routine_pass
+3234568,Borrowed Light Cafe,2026-04-16,2,routine_pass
+3234569,Tinseltown Pizzeria,2026-04-17,7,routine_warn
+3234570,The Whole Hog,2026-04-18,1,routine_pass
+3234571,Greenleaf Vegan,2026-04-19,0,routine_pass
+3234572,The Rusted Anchor,2026-04-20,11,emergency_close
+3234573,Saffron Bistro,2026-04-21,2,routine_pass

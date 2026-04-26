@@ -1,0 +1,6 @@
+License Number,Business Name,Inspection Date,Violations,Status
+2234567,The Olive Branch,2026-04-15,1,routine_pass
+2234568,Riverbend Tavern,2026-04-16,4,routine_warn
+2234569,La Bonne Cuisine,2026-04-17,0,routine_pass
+2234570,Pier 47 Seafood,2026-04-18,2,routine_pass
+2234571,Casa Verde,2026-04-19,9,emergency_close

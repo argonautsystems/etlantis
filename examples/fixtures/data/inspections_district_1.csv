@@ -1,0 +1,7 @@
+License Number,Business Name,Inspection Date,Violations,Status
+1234567,Cafe Aurora,2026-04-15,2,routine_pass
+1234568,The Iron Skillet,2026-04-15,0,routine_pass
+1234569,Beachside Diner,2026-04-16,5,routine_warn
+1234570,Sunrise Bakery,2026-04-17,1,routine_pass
+1234571,Harbor Grille,2026-04-18,8,emergency_close
+1234572,Magnolia BBQ,2026-04-19,3,routine_pass

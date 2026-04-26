@@ -1,0 +1,2 @@
+Decoy text file — the discoverer should filter this out because the
+extensions allowlist requires {csv}.
