@@ -1,0 +1,38 @@
+# etlantis CI — uv sync + import smoke + pytest --collect-only
+# Lint+test gate hardens once Phase 1 ships actual implementations.
+
+stages:
+  - lint
+  - test
+
+default:
+  image: python:3.13-slim
+  before_script:
+    - apt-get update -qq && apt-get install -qq -y curl
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - export PATH="$HOME/.local/bin:$PATH"
+    - uv --version
+
+lint:ruff:
+  stage: lint
+  script:
+    - uv sync --extra dev
+    - uv run ruff check src/ tests/
+    - uv run ruff format --check src/ tests/
+  allow_failure: false
+
+test:import-smoke:
+  stage: test
+  script:
+    - uv sync
+    - uv run python -c "import etlantis; print(f'etlantis {etlantis.__version__} import OK')"
+    - uv run python -c "import etlantis.config, etlantis.ingest, etlantis.transform, etlantis.match, etlantis.score, etlantis.closures, etlantis.analytics, etlantis.geo, etlantis.pipeline, etlantis.enforcement; print('all subsystems import OK')"
+  needs: [lint:ruff]
+
+test:pytest-collect:
+  stage: test
+  script:
+    - uv sync --extra dev
+    - uv run pytest --collect-only
+  needs: [lint:ruff]
+  allow_failure: true   # No tests yet at bootstrap; lift to required once Phase 1 lands.

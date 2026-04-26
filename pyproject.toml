@@ -1,0 +1,100 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "etlantis"
+version = "0.0.1-rc1"
+description = "Manifest-driven Polars-native ETL substrate for messy public-records data. Built on clio for AI-driven extraction primitives. Honors the Fremen Protocol for respectful data acquisition."
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+readme = "README.md"
+keywords = [
+    "etl",
+    "polars",
+    "manifest-driven",
+    "public-records",
+    "schema-drift",
+    "geospatial",
+    "fremen-protocol",
+]
+authors = [
+    { name = "Jason Perlow", email = "jperlow@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    # Foundation: clio carries the AI-driven extraction primitives
+    # (vision, schema_map, normalize, track, drift). etlantis composes
+    # them into manifest-driven pipelines.
+    "clio~=0.1",
+    # Core data engine
+    "polars>=0.20.0",
+    "pyarrow>=12.0.0",
+    # HTTP for ingest (Fremen Protocol)
+    "requests>=2.31.0",
+    # Schema validation + manifest pydantic models
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    # Fuzzy matching layer (delegates to clio.extract.normalize for normalization)
+    "rapidfuzz>=3.0.0",
+]
+
+[project.optional-dependencies]
+geo = [
+    # Geospatial primitives. Optional because non-geo apps (e.g. RiskyEats)
+    # don't need shapely/pyproj/geopandas pulled in.
+    "shapely>=2.0.0",
+    "pyproj>=3.6.0",
+    "geopandas>=0.14.0",
+]
+scrape = [
+    # Browser-automation tier for SPA pages. Plain HTTP via requests is
+    # always available; Playwright is optional for sites that need JS render.
+    "playwright>=1.40.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.6.0",
+]
+
+[project.urls]
+Homepage = "https://gitlab.com/perlowja/etlantis"
+Repository = "https://gitlab.com/perlowja/etlantis"
+Issues = "https://gitlab.com/perlowja/etlantis/-/issues"
+Substrate = "https://gitlab.com/perlowja/clio"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv]
+python-preference = "managed"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B008"]  # pytest fixtures may use Depends() in default args
