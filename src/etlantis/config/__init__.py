@@ -5,21 +5,52 @@
 
 """etlantis.config — manifest-driven configuration.
 
-Lands Phase 1. Lifts the working manifest_loader pattern from the rvmaps
-prototype (rvmaps/etlantis/manifest_loader.py on argonas) and generalizes it.
+Subsystems (Phase 1):
 
-Planned modules:
+    manifest_loader   ManifestLoader / ManifestLoadError. Load JSON or YAML
+                      manifests from a configured directory, substitute
+                      ${VAR} / ${VAR:default} env vars, validate via
+                      pydantic, expose typed accessors. Generalized from
+                      the rvmaps prototype manifest_loader.py with YAML +
+                      pydantic + caching additions.
 
-    manifest_loader   Load JSON/YAML manifests from a configured directory,
-                      substitute ${VAR} and ${VAR:default} env vars, cache
-                      loaded manifests, validate via pydantic schemas,
-                      provide typed accessors (sources, stages, directories).
+    schema            PipelineManifest, Source, Stage, FremenProtocol, and
+                      supporting pydantic models. Apps validate their
+                      manifests against PipelineManifest at load time.
 
-    schema            Pydantic models for the etlantis manifest format.
-                      Apps validate their manifests on load via these
-                      models. See docs/PHASE_3_ETLANTIS_DESIGN.md §7 for
-                      the schema shape.
-
-    env_substitute    Recursive ${VAR} / ${VAR:default} substitution over
-                      JSON/YAML loaded structures. Generalized from rvmaps.
+    env_substitute    substitute() — recursively resolves ${VAR} and
+                      ${VAR:default} tokens in dict/list/str inputs against
+                      os.environ. Pure function; no side effects beyond
+                      reading the environment.
 """
+
+from etlantis.config.env_substitute import substitute
+from etlantis.config.manifest_loader import ManifestLoader, ManifestLoadError
+from etlantis.config.schema import (
+    FremenProtocol,
+    GlobalSettings,
+    ManifestMetadata,
+    PipelineManifest,
+    Source,
+    SourceEndpoint,
+    SourceFallback,
+    SourceOutput,
+    SourceRateLimit,
+    Stage,
+)
+
+__all__ = [
+    "ManifestLoader",
+    "ManifestLoadError",
+    "PipelineManifest",
+    "ManifestMetadata",
+    "GlobalSettings",
+    "FremenProtocol",
+    "Source",
+    "SourceEndpoint",
+    "SourceFallback",
+    "SourceOutput",
+    "SourceRateLimit",
+    "Stage",
+    "substitute",
+]

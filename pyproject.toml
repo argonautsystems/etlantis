@@ -47,6 +47,8 @@ dependencies = [
     "pyarrow>=12.0.0",
     # HTTP for ingest (Fremen Protocol)
     "requests>=2.31.0",
+    # HTML parsing for ingest.discovery (link extraction from index pages)
+    "beautifulsoup4>=4.12.0",
     # Schema validation + manifest pydantic models
     "pydantic>=2.0.0",
     "pyyaml>=6.0",
