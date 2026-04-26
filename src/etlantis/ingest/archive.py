@@ -258,21 +258,15 @@ class Archiver:
                 logger.info("[archive] captured %s (%d bytes)", basename, download.size)
             else:
                 reason = (
-                    "html_disguise"
-                    if download.status == DownloadStatus.HTML_DISGUISE
-                    else "failed"
+                    "html_disguise" if download.status == DownloadStatus.HTML_DISGUISE else "failed"
                 )
-                result.failed.append(
-                    FailedFile(filename=basename, url=url, reason=reason)
-                )
+                result.failed.append(FailedFile(filename=basename, url=url, reason=reason))
                 logger.warning("[archive] %s: %s", basename, reason)
 
         self._write_snapshot_manifest(result)
         return result
 
-    def _inventory_existing(
-        self, basename: str, url: str, dest: Path
-    ) -> CapturedFile | None:
+    def _inventory_existing(self, basename: str, url: str, dest: Path) -> CapturedFile | None:
         """Hash a pre-existing file in the snapshot dir.
 
         Returns a CapturedFile entry on success, None if hashing fails
@@ -327,8 +321,7 @@ class Archiver:
         """
         if not _SOURCE_ID_RE.match(source_id):
             raise ValueError(
-                f"invalid source_id {source_id!r}; "
-                "must match ^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                f"invalid source_id {source_id!r}; must match ^[A-Za-z0-9][A-Za-z0-9_-]*$"
             )
 
     @staticmethod

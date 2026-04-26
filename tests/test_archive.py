@@ -41,9 +41,7 @@ def test_capture_result_total_bytes_excludes_failed(tmp_path):
 
 
 def test_capture_result_total_bytes_zero_on_empty(tmp_path):
-    result = CaptureResult(
-        source_id="s1", snapshot_date="2026-04-26", snapshot_dir=tmp_path
-    )
+    result = CaptureResult(source_id="s1", snapshot_date="2026-04-26", snapshot_dir=tmp_path)
     assert result.total_bytes == 0
 
 
