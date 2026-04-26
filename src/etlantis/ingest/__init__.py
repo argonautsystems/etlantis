@@ -29,10 +29,13 @@ Subsystems (Phase 1):
                       rate-limit are honored consistently. Lifted from
                       cleanroom E0_discovery.py.
 
-Planned (later in Phase 1):
+    archive           Archiver for dated snapshots of source files with
+                      SHA256 fingerprints and a per-snapshot manifest.
+                      Idempotent within a calendar day so partial-failure
+                      reruns pick up where they left off without burning
+                      rate-limit budget. Lifted from cleanroom A0_archive.py.
 
-    archive           Config-driven file archival to dated subdirectories.
-                      Lifted from cleanroom A0_archive.py.
+Planned (later in Phase 1):
 
     reader            Parallel CSV/Excel/parquet reader with multi-encoding
                       fallback (utf-8 -> latin-1 -> cp1252). Lifted from
@@ -42,6 +45,12 @@ Planned (later in Phase 1):
                       proxy tiers for sites that need more than plain HTTP.
 """
 
+from etlantis.ingest.archive import (
+    Archiver,
+    CapturedFile,
+    CaptureResult,
+    FailedFile,
+)
 from etlantis.ingest.discovery import DiscoveredLink, HTMLDiscoverer
 from etlantis.ingest.http_client import (
     DownloadResult,
@@ -55,4 +64,8 @@ __all__ = [
     "DownloadStatus",
     "HTMLDiscoverer",
     "DiscoveredLink",
+    "Archiver",
+    "CaptureResult",
+    "CapturedFile",
+    "FailedFile",
 ]
