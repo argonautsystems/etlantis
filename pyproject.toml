@@ -39,7 +39,9 @@ dependencies = [
     # Foundation: clio carries the AI-driven extraction primitives
     # (vision, schema_map, normalize, track, drift). etlantis composes
     # them into manifest-driven pipelines.
-    "clio~=0.1",
+    # Pinned to git until clio publishes to PyPI — there's an unrelated
+    # 'clio' package on PyPI that uv would otherwise resolve.
+    "clio @ git+https://gitlab.com/perlowja/clio.git@v0.1.0",
     # Core data engine
     "polars>=0.20.0",
     "pyarrow>=12.0.0",
