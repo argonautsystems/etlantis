@@ -35,11 +35,13 @@ Subsystems (Phase 1):
                       reruns pick up where they left off without burning
                       rate-limit budget. Lifted from cleanroom A0_archive.py.
 
-Planned (later in Phase 1):
+    reader            Polars-native CSV/Excel/Parquet reader with UTF-8 →
+                      cp1252 → latin-1 encoding fallback for CSV. Returns
+                      ReadResult so parse failures are inspectable rather
+                      than thrown. Lifted from cleanroom
+                      E1_ingest_vectorized.py.
 
-    reader            Parallel CSV/Excel/parquet reader with multi-encoding
-                      fallback (utf-8 -> latin-1 -> cp1252). Lifted from
-                      cleanroom E1_ingest_vectorized.py.
+Planned (later in Phase 1):
 
     scrape/           JS render (Playwright, optional) and Bright Data paid
                       proxy tiers for sites that need more than plain HTTP.
@@ -57,6 +59,7 @@ from etlantis.ingest.http_client import (
     DownloadStatus,
     HTTPClient,
 )
+from etlantis.ingest.reader import ReadResult, read_many, read_table
 
 __all__ = [
     "HTTPClient",
@@ -68,4 +71,7 @@ __all__ = [
     "CaptureResult",
     "CapturedFile",
     "FailedFile",
+    "ReadResult",
+    "read_table",
+    "read_many",
 ]
