@@ -70,6 +70,13 @@ scrape = [
     # always available; Playwright is optional for sites that need JS render.
     "playwright>=1.40.0",
 ]
+semantic = [
+    # Embedding-based string matching (etlantis.match.semantic). Heavy:
+    # torch alone is hundreds of megabytes. Apps that only need exact +
+    # fuzzy matching skip this entire dep tree.
+    "sentence-transformers>=2.2.0",
+    "numpy>=1.24.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
