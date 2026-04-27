@@ -17,55 +17,52 @@
 Built on clio (https://gitlab.com/perlowja/clio) for AI-driven extraction
 primitives. Honors the Fremen Protocol for respectful data acquisition.
 
-Subsystems (see docs/PHASE_3_ETLANTIS_DESIGN.md for the full design):
+Subsystems:
 
-    config        Manifest loader + pydantic schemas — IMPLEMENTED in v0.1.0.
+    config        Manifest loader + pydantic schemas — IMPLEMENTED v0.1.0.
 
-    ingest        HTTPClient (Fremen Protocol), HTMLDiscoverer, Archiver
-                  (dated SHA256-fingerprinted snapshots), Polars-native
-                  reader with UTF-8 → cp1252 → latin-1 encoding fallback —
-                  IMPLEMENTED in v0.1.0. JS-render and Bright Data tiers
-                  remain stubs for Phase 2+.
+    ingest        HTTPClient (Fremen Protocol), HTMLDiscoverer, Archiver,
+                  Polars-native reader with UTF-8 → cp1252 → latin-1
+                  encoding fallback — IMPLEMENTED v0.1.0.
 
-    transform     concat_frames (vertical concat with dedupe + sort +
-                  column-name normalization) and write_parquet (single-file
-                  atomic + hive-partitioned, with overwrite-or-refuse
-                  contract) — IMPLEMENTED in v0.1.0. Schema unification via
-                  clio.extract.schema_map is Phase 2+.
+    transform     concat_frames + write_parquet (atomic single-file or
+                  hive-partitioned, refuse-or-overwrite) — IMPLEMENTED v0.1.0.
 
-    match         Two-stage exact-then-fuzzy matcher (lifted from the GOLD_MASTER
-                  Sunbiz pipeline; ~75-95% expected hit rate). Incremental
-                  delta-only mode for daily 120x speedups. STUB — Phase 2+.
+    match         ExactMatcher + FuzzyMatcher (rapidfuzz-backed) +
+                  SemanticMatcher (sentence-transformers, optional install
+                  via etlantis[semantic]). Common Matcher Protocol —
+                  IMPLEMENTED v0.2.0.
 
-    score         Configurable weighted scoring with bands. Spec-formula default;
-                  apps override weights at construction. STUB — Phase 2+.
+    score         WeightedScorer + ScoreBand. Configurable weighted-sum
+                  scoring with optional categorical banding —
+                  IMPLEMENTED v0.2.0.
 
-    closures      Status-transition extraction (closures, openings, ownership
-                  changes), supertransition detection (N changes in Y window),
-                  cross-source permanent-state inference, closure-merge
-                  orchestration. STUB — Phase 2+.
+    closures      TransitionExtractor (declarative status→event mapping)
+                  + SupertransitionDetector (N events in Y days per
+                  entity) — IMPLEMENTED v0.2.0.
 
-    analytics     Rolling-window trajectory classifier, velocity primitives
-                  (days_since / age / churn_rate / license_age), operator
-                  rollup, geographic context (per-capita + deviation),
-                  statewide metrics, severity-distribution histograms.
-                  STUB — Phase 2+.
+    analytics     TrajectoryClassifier (per-entity rolling-window trend
+                  detection) + velocity helpers (days_since,
+                  age_in_days, days_between, days_since_last) —
+                  IMPLEMENTED v0.2.0.
 
-    geo           Hierarchical region classification, Shapely / pyproj /
-                  Polars-geo primitives, cross-source proximity dedup. Optional
-                  dep group: pip install etlantis[geo]. STUB — Phase 2+.
+    geo           RegionClassifier (hierarchical region lookup) +
+                  haversine_distance / haversine_expr. Shapely-backed
+                  point-in-polygon and proximity-dedup are Phase 3 —
+                  IMPLEMENTED (Stage 1) v0.2.0.
 
-    pipeline      Stage runner driven by manifest-declared stage taxonomy,
-                  resume-from-stage checkpointing, workload routing across
-                  fleet hosts. STUB — Phase 2+.
+Planned (Phase 3+):
+
+    pipeline      Stage runner driven by manifest-declared stage
+                  taxonomy, resume-from-stage checkpointing, workload
+                  routing across fleet hosts.
 
     enforcement   4-point enforcement-landscape join (inspections + EOS
                   closures + master license + unlicensed enforcement).
-                  STUB — Phase 2+.
 
-Status: alpha. v0.1.0 ships the Phase 1 substrates listed above (config +
-ingest + transform). Phase 2+ subsystems are scaffolded with docstring
-stubs only; the design-doc roadmap details the phase-by-phase plan.
+Status: alpha. v0.2.0 ships the full Phase 1 + Phase 2 substrate
+surface (config + ingest + transform + match + score + closures +
+analytics + geo). pipeline + enforcement remain Phase 3+ stubs.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "etlantis"
-version = "0.1.0"
+version = "0.2.0"
 description = "Manifest-driven Polars-native ETL substrate for messy public-records data. Built on clio for AI-driven extraction primitives. Honors the Fremen Protocol for respectful data acquisition."
 license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
