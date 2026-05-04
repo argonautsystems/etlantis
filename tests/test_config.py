@@ -50,10 +50,10 @@ def test_substitute_recursive_dict(monkeypatch):
 
 
 def test_substitute_in_list(monkeypatch):
-    monkeypatch.setenv("HOST", "argonas")
+    monkeypatch.setenv("HOST", "primary")
     raw = ["${HOST}.example.com", "static.example.com"]
     out = substitute(raw)
-    assert out == ["argonas.example.com", "static.example.com"]
+    assert out == ["primary.example.com", "static.example.com"]
 
 
 def test_substitute_multiple_vars_in_string(monkeypatch):
