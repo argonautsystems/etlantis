@@ -1,21 +1,31 @@
 # etlantis CI — lint + import smoke + pytest + end-to-end example smoke.
 # Phase 1 substrates are real, so the smoke jobs run real code now.
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+
 stages:
   - lint
   - test
 
 default:
-  image: python:3.13-slim
   before_script:
-    - apt-get update -qq && apt-get install -qq -y curl git build-essential
-    - curl -LsSf https://astral.sh/uv/install.sh | sh
-    - export PATH="$HOME/.local/bin:$PATH"
+    - export PATH="/home/jasonperlow/.local/bin:$PATH"
     - uv --version
+  tags:
+    - argos
+    - ncz-os
 
 lint:ruff:
   stage: lint
+  tags:
+    - argos
+    - ncz-os
   script:
+    - export PATH="/home/jasonperlow/.local/bin:$PATH"
     - uv sync --extra dev
     - uv run ruff check src/ tests/ examples/
     - uv run ruff format --check src/ tests/ examples/
@@ -23,7 +33,11 @@ lint:ruff:
 
 test:import-smoke:
   stage: test
+  tags:
+    - argos
+    - ncz-os
   script:
+    - export PATH="/home/jasonperlow/.local/bin:$PATH"
     - uv sync
     - uv run python -c "import etlantis; print(f'etlantis {etlantis.__version__} import OK')"
     - uv run python -c "import etlantis.config, etlantis.ingest, etlantis.transform, etlantis.match, etlantis.score, etlantis.closures, etlantis.analytics, etlantis.geo, etlantis.pipeline, etlantis.enforcement; print('all subsystems import OK')"
@@ -31,7 +45,11 @@ test:import-smoke:
 
 test:pytest:
   stage: test
+  tags:
+    - argos
+    - ncz-os
   script:
+    - export PATH="/home/jasonperlow/.local/bin:$PATH"
     - uv sync --extra dev
     - uv run pytest -q
   needs: [lint:ruff]
@@ -39,7 +57,11 @@ test:pytest:
 
 test:example-e2e:
   stage: test
+  tags:
+    - argos
+    - ncz-os
   script:
+    - export PATH="/home/jasonperlow/.local/bin:$PATH"
     - uv sync --extra dev
     # Drives every Phase 1 substrate (config + ingest + transform) end-to-end
     # against a loopback fixture server. No external network — deterministic
