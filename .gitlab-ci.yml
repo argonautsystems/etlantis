@@ -26,9 +26,10 @@ lint:ruff:
     - ncz-os
   script:
     - export PATH="/home/jasonperlow/.local/bin:$PATH"
-    - uv sync --extra dev
-    - uv run ruff check src/ tests/ examples/
-    - uv run ruff format --check src/ tests/ examples/
+    # Ruff does not need the full project dependency graph; avoid making lint
+    # depend on git-hosted/runtime packages that are irrelevant to style checks.
+    - uvx --from 'ruff>=0.6.0' ruff check src/ tests/ examples/
+    - uvx --from 'ruff>=0.6.0' ruff format --check src/ tests/ examples/
   allow_failure: false
 
 test:import-smoke:
